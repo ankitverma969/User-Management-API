@@ -31,3 +31,44 @@ export const createUser = (req, res) => {
         });
     }
 }
+
+
+export const getUsers = (req, res) => {
+    res.status(200).json({
+        success:true,
+        count: users.length,
+        data:users
+    });
+};
+
+export const updateUser = (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email } = req.body;
+
+    // Find user
+    const user = users.find(u => u.id === id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Update fields if provided
+    if (name) user.name = name;
+    if (email) user.email = email;
+
+    res.status(200).json({
+      success: true,
+      data: user
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
