@@ -1,6 +1,11 @@
 import express from "express";
 // import userRouter from "./routes/users.routes.js";
 import userRouter from "./routes/user.routes.js";
+import dotenv from "dotenv";
+import ConnectDB from "./config/db.js";
+
+dotenv.config();
+ConnectDB();
 
 const app = express();
 
