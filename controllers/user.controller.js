@@ -1,74 +1,100 @@
 import { users } from "../data/users.js";
+import {
+  createUser as createUserService,
+  deleteUserService,
+  updateUserService,
+} from "../services/user.service.js";
 
-export const createUser = (req, res) => {
-    try{
-        const {name, email} = req.body;
-
-        if(!name || !email){
-            return res.status(400).json({
-                success: false,
-                message: "Name and email are required"
-            });
-        }
-
-        const newUser = {
-            id: Date.now().toString(),
-            name,
-            email
-        };
-
-        users.push(newUser);
-
-        res.status(201).json({
-            success: true,
-            data: newUser
-        });
-
-    } catch (error){
-        res.status(500).json({
-            success: false,
-            message : error.message
-        });
-    }
-}
-
-
-export const getUsers = (req, res) => {
-    res.status(200).json({
-        success:true,
-        count: users.length,
-        data:users
-    });
+export const getUser = (req, res) => {
+  res.status(200).json({
+    success: true,
+    count: users.length,
+    data: users,
+  });
 };
 
-export const updateUser = (req, res) => {
+export const getUserById = (req, res) => {
   try {
-    const { id } = req.params;
-    const { name, email } = req.body;
-
-    // Find user
-    const user = users.find(u => u.id === id);
+    const { id } = req.body;
+    const user = users.find((user) => user.id === id);
+    console.log(id);
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
-    // Update fields if provided
-    if (name) user.name = name;
-    if (email) user.email = email;
-
     res.status(200).json({
       success: true,
-      data: user
+      data: user,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
+    });
+  }
+};
+
+export const createUser = (req, res) => {
+  try {
+    const { name, email } = req.body;
+    const newUser = createUserService(name, email);
+
+    res.status(201).json({
+      success: true,
+      data: newUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const updateUser = (req, res) => {
+  try {
+    const { id } = req.body;
+    const { name, email } = req.body;
+
+    const updateUser = updateUserService(id, name, email);
+
+    res.status(200).json({
+      success: true,
+      data: updateUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const deleteUser = (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const isDeleted = deleteUserService(id);
+
+    if (!isDeleted) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };
